@@ -6,9 +6,9 @@
 {% block content %}
 <section class="page-section">
     <div class="container">
-        <h1 class="page-title">{{ current_category.name_uz }}</h1>
+        <h1 class="page-title">{{ current_category.name_uz|capfirst }}</h1>
         <p class="page-subtitle">
-            {{ current_category.name_uz }} bo‘yicha tasdiqlangan e'lonlar ro'yxati
+            {{ current_category.name_uz|capfirst }} bo‘yicha tasdiqlangan e'lonlar ro'yxati
         </p>
 
         <form method="get" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
