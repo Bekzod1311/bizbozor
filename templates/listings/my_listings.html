@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Mening e'lonlarim | BizBozor{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <h1 class="page-title">Mening e'lonlarim</h1>
+        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+            <div><strong>Jami:</strong> {{ total }}</div>
+            <div><strong>Faol:</strong> {{ approved }}</div>
+            <div><strong>Kutilmoqda:</strong> {{ pending }}</div>
+            <div><strong>Faol emas:</strong> {{ inactive }}</div>
+        </div>
+        <!-- FILTER (SHU YERGA) -->
+        <div style="margin-bottom: 20px;">
+            <a href="?">Hammasi</a> |
+            <a href="?status=approved">Faol</a> |
+            <a href="?status=pending">Kutilmoqda</a> |
+            <a href="?status=inactive">Faol emas</a>
+        </div>
+        <p class="page-subtitle">Siz qo‘shgan barcha e’lonlar shu yerda chiqadi</p>
+
+        {% if listings %}
+            <div class="business-grid">
+                {% for listing in listings %}
+                    <div class="business-card">
+
+                        <div class="business-card-image">
+                            <a href="{% url 'business_detail' listing.slug %}">
+                                {% if listing.main_image %}
+                                    <img src="{{ listing.main_image.url }}" alt="{{ listing.title }}">
+                                {% else %}
+                                    <div class="placeholder-image">
+                                        BizBozor
+                                    </div>
+                                {% endif %}
+                            </a>
+                        </div>
+
+                        <div class="business-card-body">
+                            <h2 class="business-card-title">
+                                <a href="{% url 'business_detail' listing.slug %}">
+                                    {{ listing.title }}
+                                </a>
+                            </h2>
+
+                            <p class="business-card-price">
+                                {{ listing.price|intcomma }} so'm
+                            </p>
+
+                            <p class="business-card-desc">
+                                {{ listing.short_description }}
+                            </p>
+
+                            <p class="business-card-meta">
+                                <strong>Hudud:</strong>
+                                {% if listing.region %}{{ listing.region.name_uz }}{% endif %}
+                                {% if listing.district %} / {{ listing.district.name_uz }}{% endif %}
+                            </p>
+
+                            <p class="business-card-meta">
+                                <strong>Status:</strong> {{ listing.get_status_display }}
+                            </p>
+
+                            <div class="business-card-footer">
+                                <span class="status-badge 
+                                    {% if listing.status == 'approved' %}status-approved
+                                    {% elif listing.status == 'pending' %}status-pending
+                                    {% elif listing.status == 'inactive' %}status-inactive
+                                    {% elif listing.status == 'delete_requested' %}status-delete
+                                    {% endif %}
+                                ">
+                                    {{ listing.get_status_display }}
+                                </span>
+
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    <a href="{% url 'business_detail' listing.slug %}" class="detail-btn">
+                                        Ko‘rish
+                                    </a>
+
+                                    <a href="{% url 'edit_listing' listing.slug %}" class="detail-btn" style="background: #0f8fdd;">
+                                        Tahrirlash
+                                    </a>
+
+                                    {% if listing.status != 'inactive' and listing.status != 'delete_requested' %}
+                                        <a href="{% url 'deactivate_listing' listing.slug %}" class="detail-btn" style="background: #ef4444;">
+                                            Faol emas qilish
+                                        </a>
+                                    {% endif %}
+
+                                    {% if listing.status == 'inactive' %}
+                                        <a href="{% url 'request_delete_listing' listing.slug %}" class="detail-btn" style="background: #7c3aed;">
+                                            O‘chirish so‘rovi
+                                        </a>
+                                    {% endif %}
+
+                                    {% if listing.status == 'delete_requested' %}
+                                        <a href="{% url 'delete_listing' listing.slug %}" class="detail-btn" style="background: #111827;">
+                                            O‘chirish
+                                        </a>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Sizda hali e’lonlar yo‘q.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

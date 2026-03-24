@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}E'lon qo'shish | BizBozor{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container" style="max-width: 800px;">
+        <h1 class="page-title">E'lon qo'shish</h1>
+
+        <form method="post" enctype="multipart/form-data"
+              style="background: white; padding: 24px; border-radius: 16px; border: 1px solid #e5e7eb;">
+            
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <!-- Multi image upload block -->
+            <div style="margin-top: 24px; margin-bottom: 24px;">
+                <label style="display: block; margin-bottom: 10px; font-weight: 700;">
+                    Qo‘shimcha rasmlar (1 dan 8 tagacha)
+                </label>
+
+                <div id="drop-area" style="
+                    border: 2px dashed #22afff;
+                    border-radius: 14px;
+                    padding: 30px;
+                    text-align: center;
+                    background: #f8fbff;
+                    cursor: pointer;
+                    transition: 0.2s ease;
+                ">
+                    <p style="margin: 0 0 10px 0; font-weight: 600;">
+                        Rasmlarni shu yerga tashlang
+                    </p>
+                    <p style="margin: 0 0 14px 0; color: #6b7280;">
+                        yoki pastdagi tugma orqali tanlang
+                    </p>
+
+                    <input type="file" name="gallery_images" id="gallery_images" multiple accept="image/*" style="display: none;">
+
+                    <button type="button" id="choose-btn" class="btn btn-outline">
+                        Rasmlarni tanlash
+                    </button>
+                </div>
+
+                <p id="file-info" style="margin-top: 12px; color: #4b5563;">
+                    Hali rasm tanlanmagan
+                </p>
+
+                <div id="preview-container" style="
+                    margin-top: 16px;
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                    gap: 12px;
+                "></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Saqlash
+            </button>
+        </form>
+    </div>
+</section>
+
+<script>
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('gallery_images');
+    const chooseBtn = document.getElementById('choose-btn');
+    const previewContainer = document.getElementById('preview-container');
+    const fileInfo = document.getElementById('file-info');
+
+    let selectedFiles = [];
+
+    chooseBtn.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    dropArea.addEventListener('click', (e) => {
+        // button bosilganda ikki marta ishlamasligi uchun
+        if (e.target.id !== 'choose-btn') {
+            fileInput.click();
+        }
+    });
+
+    dropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropArea.style.background = '#eef7ff';
+        dropArea.style.borderColor = '#0f8fdd';
+    });
+
+    dropArea.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        dropArea.style.background = '#f8fbff';
+        dropArea.style.borderColor = '#22afff';
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropArea.style.background = '#f8fbff';
+        dropArea.style.borderColor = '#22afff';
+
+        const files = Array.from(e.dataTransfer.files);
+        handleFiles(files);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        handleFiles(files);
+    });
+
+    function handleFiles(files) {
+        // Faqat image fayllarni olamiz
+        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+
+        if (imageFiles.length === 0) {
+            fileInfo.textContent = "Faqat rasm fayllarni tanlang.";
+            return;
+        }
+
+        // Maksimum 8 ta
+        if (imageFiles.length > 8) {
+            fileInfo.textContent = "Maksimum 8 ta rasm tanlash mumkin.";
+            previewContainer.innerHTML = "";
+            fileInput.value = "";
+            selectedFiles = [];
+            return;
+        }
+
+        selectedFiles = imageFiles;
+        updatePreview();
+        updateInputFiles();
+    }
+
+    function updatePreview() {
+        previewContainer.innerHTML = "";
+
+        if (selectedFiles.length === 0) {
+            fileInfo.textContent = "Hali rasm tanlanmagan";
+            return;
+        }
+
+        fileInfo.textContent = `${selectedFiles.length} ta rasm tanlandi`;
+
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const wrapper = document.createElement('div');
+                wrapper.style.border = '1px solid #e5e7eb';
+                wrapper.style.borderRadius = '12px';
+                wrapper.style.overflow = 'hidden';
+                wrapper.style.background = '#fff';
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100%';
+                img.style.height = '110px';
+                img.style.objectFit = 'cover';
+                img.alt = 'preview';
+
+                const caption = document.createElement('div');
+                caption.style.padding = '8px';
+                caption.style.fontSize = '12px';
+                caption.style.color = '#374151';
+                caption.textContent = `Rasm ${index + 1}`;
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(caption);
+                previewContainer.appendChild(wrapper);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function updateInputFiles() {
+        const dataTransfer = new DataTransfer();
+
+        selectedFiles.forEach(file => {
+            dataTransfer.items.add(file);
+        });
+
+        fileInput.files = dataTransfer.files;
+    }
+</script>
+{% endblock %}
