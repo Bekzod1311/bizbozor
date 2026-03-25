@@ -147,28 +147,43 @@ def my_listings_view(request):
     return render(request, 'listings/my_listings.html', context)
 
 
+@login_required
 def edit_listing_view(request, slug):
     """
     User o'z e'lonini tahrir qiladi.
-    Faqat egasi edit qila oladi.
+    Admin qayta tasdiqlashi shart emas.
     """
-    listing = get_object_or_404(Listing, slug=slug, owner=request.user)
+
+    listing = get_object_or_404(
+        Listing,
+        slug=slug,
+        owner=request.user
+    )
 
     if request.method == 'POST':
         form = ListingForm(request.POST, request.FILES, instance=listing)
 
         if form.is_valid():
             edited_listing = form.save(commit=False)
+
+            # Xavfsizlik: owner o‘zgarmasin
             edited_listing.owner = request.user
+
+            # ❗ STATUSNI O‘ZGARTIRMAYMIZ
+            # ya’ni approved bo‘lsa — approved qoladi
+
             edited_listing.save()
 
             messages.success(request, "E'lon muvaffaqiyatli yangilandi.")
-            return redirect('my_listings')
+
+            # UX uchun yaxshi variant:
+            return redirect('business_detail', slug=edited_listing.slug)
+
     else:
         form = ListingForm(instance=listing)
 
     return render(request, 'listings/edit_listing.html', {
-        'form': form, 
+        'form': form,
         'listing': listing
     })
 
