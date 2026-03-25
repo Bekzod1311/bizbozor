@@ -151,32 +151,50 @@ def my_listings_view(request):
 def edit_listing_view(request, slug):
     """
     User o'z e'lonini tahrir qiladi.
-    Admin qayta tasdiqlashi shart emas.
+    Gallery rasmlarini ham boshqaradi:
+    - eski rasmlarni o'chirish
+    - yangi rasmlar qo'shish
     """
-
-    listing = get_object_or_404(
-        Listing,
-        slug=slug,
-        owner=request.user
-    )
+    listing = get_object_or_404(Listing, slug=slug, owner=request.user)
 
     if request.method == 'POST':
         form = ListingForm(request.POST, request.FILES, instance=listing)
 
         if form.is_valid():
             edited_listing = form.save(commit=False)
-
-            # Xavfsizlik: owner o‘zgarmasin
             edited_listing.owner = request.user
-
-            # ❗ STATUSNI O‘ZGARTIRMAYMIZ
-            # ya’ni approved bo‘lsa — approved qoladi
-
             edited_listing.save()
 
-            messages.success(request, "E'lon muvaffaqiyatli yangilandi.")
+            # 1. O'chiriladigan gallery rasmlarni olish
+            delete_image_ids = request.POST.getlist('delete_images')
 
-            # UX uchun yaxshi variant:
+            if delete_image_ids:
+                ListingImage.objects.filter(
+                    id__in=delete_image_ids,
+                    listing=listing
+                ).delete()
+
+            # 2. Yangi qo'shilgan gallery rasmlar
+            new_gallery_images = request.FILES.getlist('gallery_images')
+
+            # Hozirgi rasm sonini hisoblaymiz
+            current_count = listing.images.count()
+            new_count = len(new_gallery_images)
+
+            if current_count + new_count > 8:
+                messages.error(request, "Gallery uchun maksimum 8 ta rasm bo‘lishi mumkin.")
+                return render(request, 'listings/edit_listing.html', {
+                    'form': form,
+                    'listing': listing
+                })
+
+            for image in new_gallery_images:
+                ListingImage.objects.create(
+                    listing=listing,
+                    image=image
+                )
+
+            messages.success(request, "E'lon muvaffaqiyatli yangilandi.")
             return redirect('business_detail', slug=edited_listing.slug)
 
     else:
