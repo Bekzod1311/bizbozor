@@ -4,16 +4,111 @@
 
 {% block content %}
 <section class="page-section">
-    <div class="container" style="max-width: 700px;">
-        <h1 class="page-title">E'lonni tahrirlash</h1>
-        <p class="page-subtitle">{{ listing.title }}</p>
+    <div class="container create-listing-wrap">
+        <div class="create-header">
+            <h1 class="page-title">E'lonni tahrirlash</h1>
+            <p class="page-subtitle">
+                E'lon ma'lumotlarini yangilang. O'zgarishlardan keyin ma'lumotlar saqlanadi.
+            </p>
+        </div>
 
-        <form method="post" enctype="multipart/form-data"
-              style="background:#fff; padding:24px; border-radius:16px; border:1px solid #e5e7eb;">
+        <form method="post" enctype="multipart/form-data" class="listing-form-card">
             {% csrf_token %}
-            {{ form.as_p }}
 
-            <button type="submit" class="btn btn-primary">Saqlash</button>
+            <!-- ASOSIY MA'LUMOT -->
+            <div class="listing-form-section">
+                <div class="section-head">
+                    <h3>Asosiy ma'lumot</h3>
+                    <p>E'lonning asosiy ma'lumotlarini tahrir qiling</p>
+                </div>
+
+                <div class="listing-form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.category.id_for_label }}">Kategoriya</label>
+                        {{ form.category }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.region.id_for_label }}">Viloyat</label>
+                        {{ form.region }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.district.id_for_label }}">Tuman / shahar</label>
+                        {{ form.district }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.price.id_for_label }}">Narx</label>
+                        {{ form.price }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">Sarlavha</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.short_description.id_for_label }}">Qisqa tavsif</label>
+                    {{ form.short_description }}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">To'liq tavsif</label>
+                    {{ form.description }}
+                </div>
+            </div>
+
+            <!-- ALOQA -->
+            <div class="listing-form-section">
+                <div class="section-head">
+                    <h3>Aloqa</h3>
+                    <p>Siz bilan bog‘lanish uchun ma'lumotlar</p>
+                </div>
+
+                <div class="listing-form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}">Telefon</label>
+                        {{ form.phone }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.telegram_username.id_for_label }}">Telegram username</label>
+                        {{ form.telegram_username }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.google_maps_link.id_for_label }}">Google Maps link (ixtiyoriy)</label>
+                    {{ form.google_maps_link }}
+                </div>
+            </div>
+
+            <!-- RASMLAR -->
+            <div class="listing-form-section">
+                <div class="section-head">
+                    <h3>Asosiy rasm</h3>
+                    <p>Agar xohlasangiz, asosiy rasmni yangilang</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.main_image.id_for_label }}">Asosiy rasm</label>
+                    {{ form.main_image }}
+                </div>
+
+                {% if listing.main_image %}
+                    <div class="main-preview-box">
+                        <img src="{{ listing.main_image.url }}" alt="{{ listing.title }}" class="main-preview-image">
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-submit-row">
+                <button type="submit" class="btn btn-primary form-submit-btn">
+                    O'zgarishlarni saqlash
+                </button>
+            </div>
         </form>
     </div>
 </section>

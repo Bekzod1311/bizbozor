@@ -167,7 +167,10 @@ def edit_listing_view(request, slug):
     else:
         form = ListingForm(instance=listing)
 
-    return render(request, 'listings/edit_listing.html', {'form': form, 'listing': listing})
+    return render(request, 'listings/edit_listing.html', {
+        'form': form, 
+        'listing': listing
+    })
 
 @login_required
 def deactivate_listing_view(request, slug):
