@@ -124,10 +124,12 @@ def create_listing_view(request):
 
 @login_required
 def my_listings_view(request):
+    """
+    Login qilgan userning o'z e'lonlari ro'yxati.
+    """
     listings = Listing.objects.filter(owner=request.user).order_by('-created_at')
 
     status_filter = request.GET.get('status')
-
     if status_filter:
         listings = listings.filter(status=status_filter)
 
@@ -135,6 +137,16 @@ def my_listings_view(request):
     approved = Listing.objects.filter(owner=request.user, status='approved').count()
     pending = Listing.objects.filter(owner=request.user, status='pending').count()
     inactive = Listing.objects.filter(owner=request.user, status='inactive').count()
+    delete_requested = Listing.objects.filter(owner=request.user, status='delete_requested').count()
+
+    # Har bir listing uchun qolgan kunni hisoblaymiz
+    for listing in listings:
+        if listing.status == 'delete_requested' and listing.delete_requested_at:
+            allowed_time = listing.delete_requested_at + timedelta(days=10)
+            remaining_days = (allowed_time - timezone.now()).days
+            listing.remaining_days = max(remaining_days, 0)
+        else:
+            listing.remaining_days = None
 
     context = {
         'listings': listings,
@@ -142,6 +154,7 @@ def my_listings_view(request):
         'approved': approved,
         'pending': pending,
         'inactive': inactive,
+        'delete_requested': delete_requested,
     }
 
     return render(request, 'listings/my_listings.html', context)

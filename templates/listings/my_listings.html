@@ -7,20 +7,44 @@
 <section class="page-section">
     <div class="container">
         <h1 class="page-title">Mening e'lonlarim</h1>
-        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-            <div><strong>Jami:</strong> {{ total }}</div>
-            <div><strong>Faol:</strong> {{ approved }}</div>
-            <div><strong>Kutilmoqda:</strong> {{ pending }}</div>
-            <div><strong>Faol emas:</strong> {{ inactive }}</div>
+        <p class="page-subtitle">Siz qo‘shgan va boshqarayotgan barcha e’lonlar shu yerda</p>
+
+        <!-- STATS -->
+        <div class="dashboard-stats">
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-number">{{ total }}</div>
+                <div class="dashboard-stat-label">Jami</div>
+            </div>
+
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-number">{{ approved }}</div>
+                <div class="dashboard-stat-label">Faol</div>
+            </div>
+
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-number">{{ pending }}</div>
+                <div class="dashboard-stat-label">Kutilmoqda</div>
+            </div>
+
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-number">{{ inactive }}</div>
+                <div class="dashboard-stat-label">Faol emas</div>
+            </div>
+
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-number">{{ delete_requested }}</div>
+                <div class="dashboard-stat-label">O‘chirish so‘ralgan</div>
+            </div>
         </div>
-        <!-- FILTER (SHU YERGA) -->
-        <div style="margin-bottom: 20px;">
-            <a href="?">Hammasi</a> |
-            <a href="?status=approved">Faol</a> |
-            <a href="?status=pending">Kutilmoqda</a> |
-            <a href="?status=inactive">Faol emas</a>
+
+        <!-- FILTERS -->
+        <div class="dashboard-filter-bar">
+            <a href="?" class="dashboard-filter-link">Hammasi</a>
+            <a href="?status=approved" class="dashboard-filter-link">Faol</a>
+            <a href="?status=pending" class="dashboard-filter-link">Kutilmoqda</a>
+            <a href="?status=inactive" class="dashboard-filter-link">Faol emas</a>
+            <a href="?status=delete_requested" class="dashboard-filter-link">O‘chirish so‘ralgan</a>
         </div>
-        <p class="page-subtitle">Siz qo‘shgan barcha e’lonlar shu yerda chiqadi</p>
 
         {% if listings %}
             <div class="business-grid">
@@ -55,17 +79,8 @@
                             </p>
 
                             <p class="business-card-meta">
-                                <strong>Hudud:</strong>
-                                {% if listing.region %}{{ listing.region.name_uz }}{% endif %}
-                                {% if listing.district %} / {{ listing.district.name_uz }}{% endif %}
-                            </p>
-
-                            <p class="business-card-meta">
-                                <strong>Status:</strong> {{ listing.get_status_display }}
-                            </p>
-
-                            <div class="business-card-footer">
-                                <span class="status-badge 
+                                <strong>Status:</strong>
+                                <span class="status-badge
                                     {% if listing.status == 'approved' %}status-approved
                                     {% elif listing.status == 'pending' %}status-pending
                                     {% elif listing.status == 'inactive' %}status-inactive
@@ -74,37 +89,43 @@
                                 ">
                                     {{ listing.get_status_display }}
                                 </span>
+                            </p>
 
-                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <a href="{% url 'business_detail' listing.slug %}" class="detail-btn">
-                                        Ko‘rish
+                            {% if listing.remaining_days is not None %}
+                                <p class="business-card-meta">
+                                    <strong>O‘chirishgacha qoldi:</strong> {{ listing.remaining_days }} kun
+                                </p>
+                            {% endif %}
+
+                            <div class="dashboard-actions">
+                                <a href="{% url 'business_detail' listing.slug %}" class="detail-btn">
+                                    Ko‘rish
+                                </a>
+
+                                <a href="{% url 'edit_listing' listing.slug %}" class="detail-btn dashboard-btn-edit">
+                                    Tahrirlash
+                                </a>
+
+                                {% if listing.status != 'inactive' and listing.status != 'delete_requested' %}
+                                    <a href="{% url 'deactivate_listing' listing.slug %}" class="detail-btn dashboard-btn-danger">
+                                        Faol emas qilish
                                     </a>
+                                {% endif %}
 
-                                    <a href="{% url 'edit_listing' listing.slug %}" class="detail-btn" style="background: #0f8fdd;">
-                                        Tahrirlash
+                                {% if listing.status == 'inactive' %}
+                                    <a href="{% url 'request_delete_listing' listing.slug %}" class="detail-btn dashboard-btn-warning">
+                                        O‘chirish so‘rovi
                                     </a>
+                                {% endif %}
 
-                                    {% if listing.status != 'inactive' and listing.status != 'delete_requested' %}
-                                        <a href="{% url 'deactivate_listing' listing.slug %}" class="detail-btn" style="background: #ef4444;">
-                                            Faol emas qilish
-                                        </a>
-                                    {% endif %}
-
-                                    {% if listing.status == 'inactive' %}
-                                        <a href="{% url 'request_delete_listing' listing.slug %}" class="detail-btn" style="background: #7c3aed;">
-                                            O‘chirish so‘rovi
-                                        </a>
-                                    {% endif %}
-
-                                    {% if listing.status == 'delete_requested' %}
-                                        <a href="{% url 'delete_listing' listing.slug %}" class="detail-btn" style="background: #111827;">
-                                            O‘chirish
-                                        </a>
-                                    {% endif %}
-
-                                </div>
+                                {% if listing.status == 'delete_requested' %}
+                                    <a href="{% url 'delete_listing' listing.slug %}" class="detail-btn dashboard-btn-dark">
+                                        O‘chirish
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
+
                     </div>
                 {% endfor %}
             </div>
