@@ -699,3 +699,22 @@ body {
     border-color: #2ea8ff;
     box-shadow: 0 0 0 4px rgba(46,168,255,0.12);
 }
+
+
+.field-error {
+    margin-top: 6px;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.form-global-error {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    font-size: 14px;
+    font-weight: 600;
+}

@@ -15,6 +15,13 @@
 
         <form method="post" enctype="multipart/form-data" class="listing-form-card">
             {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="form-global-error">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
             <!-- ASOSIY MA'LUMOT -->
             <div class="listing-form-section">
@@ -27,37 +34,58 @@
                     <div class="form-group">
                         <label for="{{ form.category.id_for_label }}">Kategoriya</label>
                         {{ form.category }}
+                        {% if form.category.errors %}
+                            <div class="field-error">{{ form.category.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="form-group">
                         <label for="{{ form.region.id_for_label }}">Viloyat</label>
                         {{ form.region }}
+                        {% if form.region.errors %}
+                            <div class="field-error">{{ form.region.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="form-group">
                         <label for="{{ form.district.id_for_label }}">Tuman / shahar</label>
                         {{ form.district }}
+                        {% if form.district.errors %}
+                            <div class="field-error">{{ form.district.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="form-group">
                         <label for="{{ form.price.id_for_label }}">Narx</label>
                         {{ form.price }}
+                        {% if form.price.errors %}
+                            <div class="field-error">{{ form.price.errors.0 }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="{{ form.title.id_for_label }}">Sarlavha</label>
                     {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="field-error">{{ form.title.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="form-group">
                     <label for="{{ form.short_description.id_for_label }}">Qisqa tavsif</label>
                     {{ form.short_description }}
+                    {% if form.short_description.errors %}
+                        <div class="field-error">{{ form.short_description.errors.0 }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="form-group">
                     <label for="{{ form.description.id_for_label }}">To'liq tavsif</label>
                     {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="field-error">{{ form.description.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -72,17 +100,26 @@
                     <div class="form-group">
                         <label for="{{ form.phone.id_for_label }}">Telefon</label>
                         {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <div class="field-error">{{ form.phone.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="form-group">
                         <label for="{{ form.telegram_username.id_for_label }}">Telegram username</label>
                         {{ form.telegram_username }}
+                        {% if form.telegram_username.errors %}
+                            <div class="field-error">{{ form.telegram_username.errors.0 }}</div>
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="{{ form.google_maps_link.id_for_label }}">Google Maps link (ixtiyoriy)</label>
                     {{ form.google_maps_link }}
+                    {% if form.google_maps_link.errors %}
+                        <div class="field-error">{{ form.google_maps_link.errors.0 }}</div>
+                    {% endif %}
                 </div>
             </div>
 
