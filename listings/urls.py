@@ -8,6 +8,8 @@ from .views import (
     deactivate_listing_view,
     request_delete_listing_view,
     delete_listing_view,
+    toggle_favorite_view,
+    favorite_list_view,
 )
 
 urlpatterns = [
@@ -28,4 +30,8 @@ urlpatterns = [
     path('deactivate/<slug:slug>/', deactivate_listing_view, name='deactivate_listing'),
     path('request-delete/<slug:slug>/', request_delete_listing_view, name='request_delete_listing'),
     path('delete/<slug:slug>/', delete_listing_view, name='delete_listing'),
+
+    # FAVORITE
+    path('favorites/', favorite_list_view, name='favorite_list'),
+    path('favorite/<slug:slug>/', toggle_favorite_view, name='toggle_favorite'),
 ]

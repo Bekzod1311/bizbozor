@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Listing, ListingImage, Region, Category
+from .models import Listing, ListingImage, Region, Category, Favorite
 from django.contrib.auth.decorators import login_required
 from .forms import ListingForm
 from django.contrib import messages
@@ -71,9 +71,18 @@ def business_detail_view(request, slug):
     
     images = listing.images.all() # related_name='images' dan keladi.
 
+    is_favorited = False
+
+    if request.user.is_authenticated:
+        is_favorited = Favorite.objects.filter(
+            user=request.user,
+            listing=listing
+        ).exists()
+
     context = {
         'listing': listing,
-        "images": images
+        'images': images,
+        'is_favorited': is_favorited,
     }
 
     return render(request, 'listings/business_detail.html', context)
@@ -331,3 +340,37 @@ def category_list_view(request, category_slug):
     }
 
     return render(request, 'listings/business_list.html', context)
+
+
+@login_required
+def toggle_favorite_view(request, slug):
+    """
+    E'lonni sevimlilarga qo'shish yoki olib tashlash.
+    """
+    listing = get_object_or_404(Listing, slug=slug, status='approved')
+
+    favorite, created = Favorite.objects.get_or_create(
+        user=request.user,
+        listing=listing
+    )
+
+    if not created:
+        favorite.delete()
+        messages.success(request, "E'lon sevimlilardan olib tashlandi.")
+    else:
+        messages.success(request, "E'lon sevimlilarga qo‘shildi.")
+
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required
+def favorite_list_view(request):
+    """
+    Userning sevimli e'lonlari ro'yxati.
+    """
+    favorites = Favorite.objects.filter(user=request.user).select_related('listing').order_by('-created_at')
+
+    context = {
+        'favorites': favorites
+    }
+    return render(request, 'listings/favorite_list.html', context)

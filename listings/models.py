@@ -194,3 +194,28 @@ class ListingImage(models.Model):
 
     def __str__(self):
         return f"{self.listing.title} - Image"
+    
+
+class Favorite(models.Model):
+    """
+    User saqlab qo'ygan sevimli e'lonlar.
+    """
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorites'
+    )
+    listing = models.ForeignKey(
+        Listing,
+        on_delete=models.CASCADE,
+        related_name='favorited_by'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'listing')
+        verbose_name = "Favorite"
+        verbose_name_plural = "Favorites"
+
+    def __str__(self):
+        return f"{self.user.username} -> {self.listing.title}"

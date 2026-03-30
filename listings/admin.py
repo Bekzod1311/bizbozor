@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Region, District, Listing, ListingImage
+from .models import Category, Region, District, Listing, ListingImage, Favorite
 
 
 # Category admin
@@ -30,3 +30,4 @@ class ListingAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ListingImage)
+admin.site.register(Favorite)

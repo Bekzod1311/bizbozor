@@ -69,6 +69,7 @@
                     </p>
                 {% endif %}
 
+                <!-- ACTIONS -->
                 <div class="detail-actions">
                     <a href="tel:{{ listing.phone }}" class="btn-call">
                         Qo‘ng‘iroq qilish
@@ -77,6 +78,17 @@
                     {% if listing.telegram_username %}
                         <a href="https://t.me/{{ listing.telegram_username }}" class="btn-telegram" target="_blank">
                             Telegram yozish
+                        </a>
+                    {% endif %}
+
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'toggle_favorite' listing.slug %}"
+                           class="btn {% if is_favorited %}btn-primary{% else %}btn-outline{% endif %}">
+                            {% if is_favorited %}
+                                Sevimlidan olib tashlash
+                            {% else %}
+                                Sevimliga qo‘shish
+                            {% endif %}
                         </a>
                     {% endif %}
                 </div>
