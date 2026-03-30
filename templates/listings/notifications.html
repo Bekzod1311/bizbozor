@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Bildirishnomalar{% endblock %}
+
+{% block content %}
+<section class="page-section">
+    <div class="container">
+        <h1 class="page-title">Bildirishnomalar</h1>
+
+        {% if notifications %}
+            <div>
+                {% for n in notifications %}
+                    <div style="padding: 16px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 10px;">
+                        <p>{{ n.message }}</p>
+                        <small>{{ n.created_at }}</small>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Bildirishnomalar yo‘q.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
