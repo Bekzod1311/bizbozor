@@ -43,6 +43,11 @@
                 </div>
 
                 <p class="detail-meta">
+                    👁 {{ listing.view_count }} marta ko‘rilgan
+                </p>
+                    
+
+                <p class="detail-meta">
                     <strong>Hudud:</strong>
                     {% if listing.region %}{{ listing.region.name_uz }}{% endif %}
                     {% if listing.district %} / {{ listing.district.name_uz }}{% endif %}

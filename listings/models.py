@@ -175,6 +175,8 @@ class Listing(models.Model):
         return self.title
     
 
+    view_count = models.PositiveIntegerField(default=0)
+
 class ListingImage(models.Model):
     """
     Listing uchun qo‘shimcha rasmlar (gallery).

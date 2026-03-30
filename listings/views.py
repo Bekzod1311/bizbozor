@@ -5,7 +5,7 @@ from .forms import ListingForm
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.paginator import Paginator
 
 
@@ -63,6 +63,10 @@ def business_detail_view(request, slug):
     Approved bo'lmasa faqat egasi ko'ra oladi.
     """
     listing = get_object_or_404(Listing, slug=slug)
+
+    listing.view_count = F('view_count') + 1
+    listing.save(update_fields=['view_count'])
+    listing.refresh_from_db()
 
     # Agar listing approved bo'lmasa, faqat egasiga ko'rsatamiz
     if listing.status != 'approved':
